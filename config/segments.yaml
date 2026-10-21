@@ -1,0 +1,44 @@
+# Five-layer rule-based segmentation. Every user gets exactly one label per layer.
+# Rules inside a layer are evaluated top to bottom; the first match wins.
+
+reachability:
+  # Push-reachable = push enabled AND in country AND the device opened the app recently.
+  active_device_days: 30
+
+lifecycle:
+  # 1. browser  : app opens > 0 and zero loyalty interactions (checked first, so the
+  #               Browser label is exactly that definition, regardless of tenure)
+  # 2. new      : signed up less than `new_max_days_since_signup` days ago
+  # 3. dormant  : last loyalty action more than `dormant_min_days` ago, or no activity at all
+  # 4. at-risk  : last loyalty action `at_risk_min_days`..`dormant_min_days` days ago
+  # 5. active   : everything else (loyalty action within `at_risk_min_days`)
+  new_max_days_since_signup: 30
+  at_risk_min_days: 30
+  dormant_min_days: 90
+
+interest:
+  # Dominant content cluster by action-depth-weighted share. Users with no loyalty
+  # interactions get "none"; users whose top cluster is below this share get "mixed".
+  min_dominant_share: 0.35
+
+play_style:
+  # Plays = game_play + raffle_entry events.
+  # non-player   : no plays
+  # one-and-done : plays on at most `one_and_done_max_play_days` distinct days
+  # collector    : plays across at least `collector_min_distinct_items` different items
+  # repeat player: everyone else (comes back, but to a few favourites)
+  one_and_done_max_play_days: 1
+  collector_min_distinct_items: 6
+
+deal_style:
+  # non-redeemer      : no redeemed offers
+  # high-value seeker : mean reward value of redeemed offers >= threshold
+  # any-deal          : everyone else who redeems
+  high_value_min_mean_reward: 40
+
+channel:
+  # not reachable          : fails the reachability rule above
+  # reachable-responsive   : reachable and push open rate >= threshold (with >= min_received)
+  # reachable-unresponsive : reachable, but below the threshold or not enough pushes seen
+  responsive_min_open_rate: 0.10
+  min_push_received: 3

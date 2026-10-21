@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+
+# Environments
+.venv/
+venv/
+.env
+
+# Generated data and outputs (regenerate with `python -m loyaltyseg all`)
+data/raw/
+outputs/
+scratch*/
+scratch*.log
+*.parquet
+
+# Working notes
+PLAN.md
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

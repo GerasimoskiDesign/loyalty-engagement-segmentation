@@ -1,0 +1,77 @@
+# Modelling parameters. Segment thresholds live in segments.yaml, audiences in audiences.yaml.
+
+content:
+  # Candidate k range for K-Means over the ~150 catalog items.
+  k_min: 4
+  k_max: 14
+  n_init: 20
+  # Relative weight of each feature block after scaling. Item type is weighted highest
+  # because a game and a voucher are different products even if their numbers look alike.
+  block_weights:
+    item_type: 2.0
+    category: 1.5
+    frequency: 0.5
+    numeric: 1.0
+  naming:
+    deep_discount_min: 0.45   # mean discount depth that earns the "Deep-discount" prefix
+    dominant_share_min: 0.6   # share needed for a category / frequency to name a cluster
+    casual_effort_max: 1.5
+    challenge_effort_min: 2.5
+
+features:
+  # Action depth: how much one event says about interest in an item.
+  action_depth:
+    loyalty_tab_view: 1
+    game_play: 2
+    raffle_entry: 2
+    offer_unlock: 3
+    offer_redeem: 5
+  # Recency value used for users with no loyalty activity at all (days).
+  no_activity_recency_days: 400
+
+archetypes:
+  # k range for the *engaged* users (>= 1 loyalty action). Users with zero loyalty actions
+  # have no interest profile to cluster and are labelled by rule (Browsers / Inactive).
+  k_min: 3
+  k_max: 9
+  pca:
+    enabled: true
+    variance: 0.95
+  silhouette_sample: 20000
+  # The k scan runs on at most this many engaged users (seeded sample); final fit uses all.
+  selection_sample: 150000
+  stability_seeds: [42, 43, 44, 45, 46]
+  # A k is "stable" when the mean pairwise ARI across the 5 seeds is at least this.
+  # 0.85 is above the ~0.8 level usually read as "strong agreement" for ARI.
+  stability_min_ari: 0.85
+  batch_size: 4096
+  n_init: 3
+  # Pull each user's content shares towards the population mix with this many depth points
+  # (1 depth point = one item view). Stabilises profiles of users with very few actions.
+  share_smoothing_alpha: 6
+  # Each fit keeps the best of this many MiniBatchKMeans runs by full-data inertia.
+  restarts: 8
+  # Columns transformed with log1p before scaling (heavy-tailed counts / values / recency).
+  log1p_columns: [loyalty_days_per_30d, reward_value_per_30d, app_opens_per_30d, recency_days_filled]
+  # Non-share feature columns; every content-cluster share column is added automatically.
+  feature_columns:
+    - loyalty_days_per_30d
+    - recency_days_filled
+    - reward_value_per_30d
+    - discount_pref
+    - push_open_rate_filled
+    - loyalty_ratio
+    - app_opens_per_30d
+  naming:
+    dormant_min_recency_days: 90       # cluster median recency above -> Dormant
+    occasional_max_days_per_30d: 0.6   # cluster median loyalty-active days / 30d at/below -> Occasional
+    game_share_min: 0.5
+    category_share_min: 0.4
+    deal_discount_min: 0.4
+
+experiment:
+  seed: 42
+  attribution_days: 7
+  arm_split: 0.5
+  alpha: 0.05
+  power: 0.80

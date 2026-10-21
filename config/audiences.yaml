@@ -1,0 +1,54 @@
+# Campaign audiences exported by `python -m loyaltyseg audiences`.
+#
+# Filters: `include` / `exclude` map a master-table column to a list of allowed values.
+# Keys are ANDed, values inside a list are ORed. Audiences are processed in the order
+# listed; with `dedupe_across_audiences` a user lands only in the first audience that
+# claims them (list order = priority).
+
+defaults:
+  require_reachable: true
+  exclusion_days: 7            # skip users pushed in the last N days (contact history)
+  dedupe_across_audiences: true
+  export_columns: [user_id, os, preferred_channel, archetype, lifecycle, interest, channel]
+
+audiences:
+  - name: reachable_browsers
+    description: Open the app regularly but never used the loyalty hub - onboarding push.
+    include:
+      lifecycle: [browser]
+    max_size: 25000
+
+  - name: at_risk_deal_hunters
+    description: Deal-driven users whose loyalty activity stopped 30-90 days ago - win-back.
+    include:
+      lifecycle: [at-risk]
+      archetype: [Deal Hunters]
+
+  - name: tech_chasers
+    description: Tech offer and tech raffle enthusiasts - new tech partner launch.
+    include:
+      archetype: [Tech Chasers]
+    exclude:
+      lifecycle: [dormant]
+
+  - name: shoppers
+    description: Shopping-voucher users - seasonal shopping campaign.
+    include:
+      archetype: [Shoppers]
+    exclude:
+      lifecycle: [dormant]
+    max_size: 10000
+
+  - name: active_gamers
+    description: Frequent game players - new streak mission announcement.
+    include:
+      archetype: [Gamers]
+      lifecycle: [active, new]
+
+  - name: high_value_redeemers
+    description: Users who redeem high-value offers - premium partner offer. Overlaps the
+      tech and shopping audiences on purpose; cross-audience dedupe keeps only the rest.
+    include:
+      deal_style: [high-value seeker]
+      lifecycle: [active, at-risk]
+    max_size: 8000

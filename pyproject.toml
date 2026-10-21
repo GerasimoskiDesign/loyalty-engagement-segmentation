@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loyaltyseg"
+version = "0.1.0"
+description = "Content clustering + 5-layer behavioural segmentation of loyalty-app users, with campaign audience exports and A/B experiment readout. Synthetic data."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Mario Gerasimoski" }]
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pyarrow>=14.0",
+    "scikit-learn>=1.4",
+    "scipy>=1.11",
+    "pyyaml>=6.0",
+    "matplotlib>=3.8",
+    "reportlab>=4.0",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+    "statsmodels>=0.14",
+    "nbformat>=5.9",
+    "nbclient>=0.10",
+    "ipykernel>=6.29",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "T20"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["T20"]
