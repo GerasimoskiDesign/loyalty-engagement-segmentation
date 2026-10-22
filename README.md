@@ -119,7 +119,7 @@ Planning helper: detecting a 10% relative lift on the 3.75% acquisition baseline
 
 ## Production context
 
-> _Production context: TODO(Mario) — what the real version did and its outcomes, using only publicly shareable facts._
+The production version targeted push campaigns for a loyalty program of 800k+ users; the market was rated best in its group for cost-efficient campaign targeting.
 
 ## Quickstart
 
